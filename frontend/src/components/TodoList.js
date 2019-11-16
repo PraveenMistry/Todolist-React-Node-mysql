@@ -26,6 +26,7 @@ class TodoList extends Component {
       id: '',
       task: '',
       status: 0,
+      createdAt:'',
       isUpdate : false,
       errorMessage:'',
       items: [],
@@ -52,6 +53,7 @@ class TodoList extends Component {
       id: '',
       task: '',
       status: 0,
+      createdAt:'',
       isUpdate : false,
       errorMessage:'',
       items: [],
@@ -60,9 +62,25 @@ class TodoList extends Component {
     this.getAll(token)
   }
 
+  getStatus(statusCode) {
+    const status = ['Start','In Progress','End'];
+    return status[statusCode];
+  }
+
+
+  formatDate(date) {
+    var monthNames = [
+      "January", "February", "March",
+      "April", "May", "June", "July",
+      "August", "September", "October",
+      "November", "December"
+    ];
+    return date.getDate() + ' ' + monthNames[date.getMonth()] + ', ' + date.getFullYear();
+  }
+  
+
   getAll = token => {
     getList(token).then(data => {
-        console.log("getList",data);
         if(data.status !== 'success'){
             localStorage.removeItem('usertoken')
             this.props.history.push(`/login`)
@@ -207,10 +225,20 @@ class TodoList extends Component {
         </button>
         </form>
         <table className="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Created Date</th>
+              <th className="text-right">Action</th>
+            </tr>
+          </thead>
           <tbody>
             {this.state.items.map((item, index) => (
               <tr key={index}>
-                <td className="text-left">{item.name}</td>
+              <td className="text-left">{item.name}</td>
+                <td className="text-left">{this.getStatus(item.status)}</td>
+                <td className="text-left">{this.formatDate(new Date(item.createdAt))}</td>
                 <td className="text-right">
                   <button
                     className="btn btn-info mr-1"
