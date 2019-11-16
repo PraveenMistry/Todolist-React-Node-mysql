@@ -104,7 +104,6 @@ class TodoList extends Component {
 
   onUpdate = e => {
     e.preventDefault()
-
     const validation = this.validator.validate(this.state);
     this.setState({ validation });
     if (validation.isValid) {
@@ -152,7 +151,7 @@ class TodoList extends Component {
   render() {
     return (
     <div className="row"> 
-        <div className="col-md-12 mt-3">
+        <div className="col-md-12 mt-5">
         <div className="col-md-12">
         { this.state.errorMessage !== '' ?
             <div className="alert alert-danger alert-dismissible fade show" role="alert">
@@ -164,7 +163,7 @@ class TodoList extends Component {
         </div>
         <form onSubmit={this.onSubmit}>
         <div className="form-group">
-            <label htmlFor="task">Task Name</label>
+            <label htmlFor="task">Task Title</label>
             <div className="row">
               <div className="col-md-12">
                 <input

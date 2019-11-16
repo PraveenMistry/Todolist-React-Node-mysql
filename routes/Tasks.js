@@ -54,7 +54,6 @@ tasks.get('/task/:id', function(req, res, next) {
 
 tasks.post('/task', function(req, res, next) {
   if(req.headers['authorization']){
-    //console.log("req",req.body)
     if (!req.body.name && !req.body.status) {
       res.status(400)
       res.json({

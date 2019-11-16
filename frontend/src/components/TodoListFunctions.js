@@ -21,7 +21,6 @@ export const getList = token => {
 }
 
 export const addToList = task => {
-    console.log(task,"addToList")
   return axios
     .post(
       '/api/task',

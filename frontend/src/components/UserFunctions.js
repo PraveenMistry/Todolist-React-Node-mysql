@@ -41,3 +41,29 @@ export const getProfile = token => {
       return {'error':err.message,'status':'failed'};
     })
 }
+
+
+
+export const updatePassword = updatePasswordRequest => {
+  return axios
+    .put(
+      `/users/password/`,
+      {
+        email:updatePasswordRequest.email,
+        password: updatePasswordRequest.password,
+        new_password: updatePasswordRequest.new_password
+      },
+      {
+        headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': updatePasswordRequest.token 
+        }
+      }
+    )
+    .then(function(response) {
+        return response.data;
+    }).catch(err=>{
+      console.dir("err",err);
+      return err.message;
+    })
+}

@@ -94,4 +94,47 @@ users.get('/profile', (req, res) => {
 })
 
 
+
+users.put('/password', function(req, res, next) {
+  if(req.headers['authorization']){
+    if (!req.body.email && !req.body.password && !req.body.new_password && !req.body.confirm_password) {
+      res.status(400)
+      res.json({
+        error: 'Bad Data'
+      })
+    } else {
+
+        User.findOne({
+          where: {
+            email: req.body.email
+          }
+        })
+        .then(user => {
+          if (user) {
+              if(bcrypt.compareSync(req.body.password,user.password)){
+                bcrypt.hash(req.body.new_password,10,(err,hash)=>{
+                    User.update(
+                        { password: hash },
+                        { where: { email: req.body.email } }
+                      )
+                      .then(() => {
+                        res.json({ status: 'success', message:'Password Updated !' })
+                      })
+                      .error(err => handleError(err))
+                })
+              }else{
+                res.json({
+                  status:'failed',
+                  message:'Old password not matched'
+                });
+              }
+            }
+        })
+    }
+  }
+  else{
+    res.json({status:'failed',message:'Token not passed !'})
+  }
+})
+
 module.exports = users;
