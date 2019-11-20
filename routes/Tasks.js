@@ -81,17 +81,35 @@ tasks.post('/task', function(req, res, next) {
 
 tasks.delete('/task/:id', function(req, res, next) {
   if(req.headers['authorization']){
-    Task.destroy({
-      where: {
-        id: req.params.id
-      }
+
+    var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY)
+      console.log("user_decoded_id",decoded.id);
+      Task.findOne({
+        where: {
+          user_id: decoded.id,
+          id:req.params.id
+        }
+      })
+      .then(task => {
+        if (task) {
+          Task.destroy({
+            where: {
+              id: req.params.id
+            }
+          })
+          .then(() => {
+            res.json({ status: 'Task Deleted!' })
+          })
+          .catch(err => {
+            res.send('error: ' + err)
+          })
+        }else{
+          res.json({ status: 'failed', message:'Task not found' })
+        }
+    }).catch(err => {
+      res.json({ status: 'failed', message:'Task not found' })
     })
-      .then(() => {
-        res.json({ status: 'Task Deleted!' })
-      })
-      .catch(err => {
-        res.send('error: ' + err)
-      })
+
   }else{
       res.json({status:'failed',message:'Token not passed !'})
       console.log("Token Not Passed");
@@ -106,14 +124,32 @@ tasks.put('/task/:id', function(req, res, next) {
         error: 'Bad Data'
       })
     } else {
-      Task.update(
-        { name: req.body.name, status: req.body.status },
-        { where: { id: req.params.id } }
-      )
-        .then(() => {
-          res.json({ status: 'success', message:'Task Updated !' })
+
+      var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY)
+      console.log("user_decoded_id",decoded.id);
+      Task.findOne({
+        where: {
+          user_id: decoded.id,
+          id:req.params.id
+        }
+      })
+        .then(task => {
+          if (task) {
+            Task.update(
+              { name: req.body.name, status: req.body.status },
+              { where: { id: req.params.id } }
+            )
+              .then(() => {
+                res.json({ status: 'success', message:'Task Updated !' })
+              })
+              .error(err => handleError(err))
+          }else{
+            res.json({ status: 'failed', message:'Task not found' })
+          }
+        }).catch(err => {
+          res.json({ status: 'failed', message:'Task not found' })
         })
-        .error(err => handleError(err))
+
     }
   }
   else{
